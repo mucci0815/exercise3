@@ -7,6 +7,8 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -21,6 +23,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.muc13_03_bachnigsch.DiscoveryActivity"
+            android:label="@string/title_activity_discovery" >
+        </activity>
+        <activity
+            android:name="com.example.muc13_03_bachnigsch.SearchActivity"
+            android:label="@string/title_activity_search" >
+        </activity>
+        <activity
+            android:name="com.example.muc13_03_bachnigsch.SettingsActivity"
+            android:label="@string/title_activity_settings" >
         </activity>
     </application>
 
