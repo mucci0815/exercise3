@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -30,6 +31,18 @@ public class NetworkHandler  {
 	private static final String DEBUG_TAG = "HttpExample";
 	private int receivedAzimut;
 	private boolean sendMode;
+	private SearchActivity searchActivity;
+	
+	
+	// Konstruktor
+	
+	public NetworkHandler(){
+	}
+	
+	public NetworkHandler(SearchActivity searchActivity){
+		this.searchActivity = searchActivity;
+	}
+	
 	
 	// Sendet uebergebenen String - ruft async Task auf
 	public void sendData(String sendUri) {	
@@ -38,10 +51,10 @@ public class NetworkHandler  {
 	}
 	
 	// Empfaengt Daten - ruft async Task auf
-	public int receiveData(String receiveUri){
+	public void receiveData(String receiveUri){
+		
 		sendMode = false;
 		new DownloadWebpageTask().execute(receiveUri,"GET");
-		return receivedAzimut;
 	}
 	
 	// Uses AsyncTask to create a task away from the main UI thread. This task takes a 
@@ -64,6 +77,7 @@ public class NetworkHandler  {
        // onPostExecute displays the results of the AsyncTask.
        @Override
        protected void onPostExecute(String result) {
+    	   System.out.println("Empfangener String: " + result);
     	   // muss im Falle des Sendens nicht ausgefuehrt werden
     	   if (sendMode == false){
 	    	   try {  
@@ -82,8 +96,9 @@ public class NetworkHandler  {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 	    	   }    	   
-		       System.out.println("Empfangener Winkel: " + result);
-		       System.out.println("Received Azimut: " + receivedAzimut);      
+		       
+		       System.out.println("Received Azimut: " + receivedAzimut);    
+		      searchActivity.setAzimut(receivedAzimut);
 		    }
        	}	  
    }
@@ -141,8 +156,7 @@ public class NetworkHandler  {
 	 }
 	 
 	 
-	 public int getReceivedAzimut(){
-		 return receivedAzimut;
-	 }
+	 
+	 
 
 }
