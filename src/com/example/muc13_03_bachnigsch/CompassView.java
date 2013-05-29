@@ -1,5 +1,6 @@
 package com.example.muc13_03_bachnigsch;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,7 +8,16 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.view.View;
 
+/**
+ * 
+ * @author Max Nigsch
+ * @author Martin Bach
+ * 
+ * CompassView - Zeigt einen Kompasszeiger an
+ *
+ */
 
+@SuppressLint("DrawAllocation")
 public class CompassView extends View {
 	private float winkel=0;
 	private Paint zeichenfarbe = new Paint();
@@ -20,7 +30,7 @@ public class CompassView extends View {
 	}
 
 	public void setWinkel(float winkel) {
-		this.winkel = winkel;
+		this.winkel = -winkel;
 		invalidate();
 	}
 

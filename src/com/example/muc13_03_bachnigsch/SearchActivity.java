@@ -47,8 +47,7 @@ public class SearchActivity extends Activity implements SensorEventListener {
 	protected void onResume() {
 		super.onResume();
 		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-	}
-	
+	}	
 	
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
@@ -57,7 +56,6 @@ public class SearchActivity extends Activity implements SensorEventListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
 
-		
 		// Show the Up button in the action bar.
 		setupActionBar();
 			
@@ -114,42 +112,28 @@ public class SearchActivity extends Activity implements SensorEventListener {
 	    // Azimut
 	    float azimut_f = event.values[0];
 	    azimut = (int)(azimut_f + 0.5);
-//	    
-//	    
+    
 //		textView.setText("Received Azimut: " + Integer.toString(receivedAzimut) + "°");
 //		textView.setText("Personal Angle: " + Integer.toString(azimut) + "°");
-//		
-		System.out.println("Ich wuerde hier: " + receivedAzimut);
-//		
-		if (compassView != null) {
-			System.out.println("Ich setze hier: " + azimut);
-			compassView.setWinkel(-azimut);
-			//compassView.setWinkel(-(azimut+180-receivedAzimut));
-		}
 		
+		System.out.println("Ich wuerde hier: " + receivedAzimut);
+		
+		if (compassView != null) {
+//			System.out.println("Ich setze hier: " + azimut);
+			compassView.setWinkel(azimut + 180 - receivedAzimut);
+		}		
 	}
-	
-	
-	
-	
-	
-	
+		
 	public void receiveOrientation(View view){
 
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 	
 		if (networkInfo != null && networkInfo.isConnected()) {
-			
-			System.out.println("Ich werde aufgerufen");
-			
 			NetworkHandler networkHandler = new NetworkHandler(this);
-			networkHandler.receiveData(receiveUri);
-					
+			networkHandler.receiveData(receiveUri);				
 		} else {
-			//System.out.print("No network connection available.");
-			textView.setText("No network connection available.");
-		    	
+			textView.setText("No network connection available.");	    	
 		}
 		
 		compassView = new CompassView(this);
@@ -159,6 +143,4 @@ public class SearchActivity extends Activity implements SensorEventListener {
 	public void setAzimut(int receivedAzimut) {
 		this.receivedAzimut = receivedAzimut;
 	}
-	
-
 }

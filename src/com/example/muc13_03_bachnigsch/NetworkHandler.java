@@ -13,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -33,16 +32,13 @@ public class NetworkHandler  {
 	private boolean sendMode;
 	private SearchActivity searchActivity;
 	
-	
-	// Konstruktor
-	
+	// Konstruktoren
 	public NetworkHandler(){
 	}
 	
 	public NetworkHandler(SearchActivity searchActivity){
 		this.searchActivity = searchActivity;
 	}
-	
 	
 	// Sendet uebergebenen String - ruft async Task auf
 	public void sendData(String sendUri) {	
@@ -52,7 +48,6 @@ public class NetworkHandler  {
 	
 	// Empfaengt Daten - ruft async Task auf
 	public void receiveData(String receiveUri){
-		
 		sendMode = false;
 		new DownloadWebpageTask().execute(receiveUri,"GET");
 	}
@@ -93,7 +88,6 @@ public class NetworkHandler  {
 		    		}
 	    	   } 
 	    	   catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 	    	   }    	   
 		       
@@ -154,9 +148,4 @@ public class NetworkHandler  {
 	    	 return new String(buffer); 
 	     }
 	 }
-	 
-	 
-	 
-	 
-
 }

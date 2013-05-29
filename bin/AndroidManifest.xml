@@ -26,15 +26,18 @@
         </activity>
         <activity
             android:name="com.example.muc13_03_bachnigsch.DiscoveryActivity"
-            android:label="@string/title_activity_discovery" >
+            android:label="@string/title_activity_discovery"
+            android:parentActivityName="com.example.muc13_03_bachnigsch.MainActivity" >
         </activity>
         <activity
             android:name="com.example.muc13_03_bachnigsch.SearchActivity"
-            android:label="@string/title_activity_search" >
+            android:label="@string/title_activity_search" 
+            android:parentActivityName="com.example.muc13_03_bachnigsch.MainActivity" >
         </activity>
         <activity
             android:name="com.example.muc13_03_bachnigsch.SettingsActivity"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="com.example.muc13_03_bachnigsch.MainActivity" >
         </activity>
     </application>
 
