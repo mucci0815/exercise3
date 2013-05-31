@@ -4,18 +4,22 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import com.example.muc13_03_bachnigsch.AR.CameraPreview;
+import com.example.muc13_03_bachnigsch.AR.GLSurfaceRenderer;
 import com.example.muc13_03_bachnigsch.AR.OverlaySurfaceView;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
@@ -26,6 +30,8 @@ public class ARActivity extends Activity implements SensorEventListener {
 	private Camera mCamera = null;
 	private CameraPreview mPreview = null;
 	private OverlaySurfaceView mOverlaySurface = null;
+	private GLSurfaceRenderer mSurfaceRenderer = null;
+	private GLSurfaceView mGLSurfaceView = null;
 	private SensorManager mSensorManager;
 	private Sensor mRotationVectorSensor;
 	private final float[] mRotationMatrix = new float[16];
@@ -65,6 +71,9 @@ public class ARActivity extends Activity implements SensorEventListener {
 			mCamera.release();
 			mCamera = null;
 		}
+		
+		mSurfaceRenderer.stop();
+		mGLSurfaceView.onPause();
 	}
 
 	@Override
@@ -81,11 +90,21 @@ public class ARActivity extends Activity implements SensorEventListener {
 			// create preview and set it as content for activity
 			mPreview = new CameraPreview(this, mCamera);
 			FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-			preview.addView(mPreview);
+			
+//			mOverlaySurface = new OverlaySurfaceView(this);
 
-			mOverlaySurface = new OverlaySurfaceView(this);
-
-			preview.addView(mOverlaySurface);
+			mSurfaceRenderer = new GLSurfaceRenderer(mSensorManager);
+			mGLSurfaceView = new GLSurfaceView(this);
+			mGLSurfaceView.setEGLConfigChooser( 8, 8, 8, 8, 16, 0 );
+			mGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+			mGLSurfaceView.setRenderer(mSurfaceRenderer);
+			preview.addView(mGLSurfaceView);
+   
+	        mSurfaceRenderer.start();
+	        mGLSurfaceView.onResume();
+			
+	        preview.addView(mPreview);
+			
 		}
 	}
 
@@ -136,9 +155,9 @@ public class ARActivity extends Activity implements SensorEventListener {
 		// v[1] gibt "vertikalen Kippwinkel" an und sollte im Optimalfall 0 sein
 		// v[2] gibt in landscape den "horizontalen kippwinkel" des handys an => sollte also bei pi/2 liegen
 
-		Log.i(TAG, "v[0]=" + v[0] + "; v[1]=" + v[1] + "; v[2]=" + v[2]);
+//		Log.i(TAG, "v[0]=" + v[0] + "; v[1]=" + v[1] + "; v[2]=" + v[2]);
 
-		mOverlaySurface.invalidate();
+//		mOverlaySurface.invalidate();
 	}
 
 }
