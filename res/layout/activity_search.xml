@@ -6,13 +6,13 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity" >
+    tools:context=".SearchActivity" >
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Herzlich willkommen beim Mensafinder" />
+        android:text="SearchActivity" />
 
     <Button
         android:id="@+id/button1"
@@ -20,18 +20,19 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView1"
         android:layout_below="@+id/textView1"
-        android:layout_marginTop="54dp"
-        android:text="Freund finden"
-        android:onClick="callSearchActivity" />
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="41dp"
+        android:text="receiveOrientation"
+        android:onClick="receiveOrientation" />
 
-    <Button
-        android:id="@+id/button2"
+    <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/button1"
+        android:layout_alignLeft="@+id/button1"
         android:layout_below="@+id/button1"
-        android:layout_marginTop="21dp"
-        android:text="Gefunden werden" 
-        android:onClick="callDiscoveryActivity"/>
+        android:layout_marginTop="108dp"
+        android:text="Recieved Angle: "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>
