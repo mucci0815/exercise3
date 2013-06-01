@@ -13,6 +13,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.os.Build;
 import android.util.Log;
 
@@ -23,6 +24,11 @@ public class GLSurfaceRenderer implements GLSurfaceView.Renderer,
 	private SensorManager mSensorManager;
 	private Sensor mRotationVectorSensor;
 	private Square mSquare;
+	
+	private long last_timestamp = 0;
+	float next = -1.0f;
+
+	private final float[] mRotationMatrix = new float[16];
 
 	public GLSurfaceRenderer(SensorManager sensorManager) {
 		mSensorManager = sensorManager;
@@ -31,6 +37,12 @@ public class GLSurfaceRenderer implements GLSurfaceView.Renderer,
 				.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
 		mSquare = new Square();
+
+		// initialize the rotation matrix to identity
+		mRotationMatrix[0] = 1;
+		mRotationMatrix[4] = 1;
+		mRotationMatrix[8] = 1;
+		mRotationMatrix[12] = 1;
 	}
 
 	public void start() {
@@ -52,7 +64,19 @@ public class GLSurfaceRenderer implements GLSurfaceView.Renderer,
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		// TODO Auto-generated method stub
+		// we received a sensor event. it is a good practice to check
+		// that we received the proper event
+		if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+			// convert the rotation-vector to a 4x4 matrix. the matrix
+			// is interpreted by Open GL as the inverse of the
+			// rotation-vector, which is what we want.
+			float[] temp = new float[3];
+			temp[0] = event.values[0];
+			temp[1] = event.values[1];
+			temp[2] = event.values[2];
+			SensorManager.getRotationMatrixFromVector(mRotationMatrix,
+					temp);
+		}
 
 	}
 
@@ -64,8 +88,40 @@ public class GLSurfaceRenderer implements GLSurfaceView.Renderer,
 		// set-up modelview matrix
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glTranslatef(0, 0, -3.0f);
-//		gl.glMultMatrixf(mRotationMatrix, 0);
+//		gl.glTranslatef(0, 0, -1.0f);
+		
+//		if(System.currentTimeMillis() - last_timestamp > 1000) {
+//			last_timestamp = System.currentTimeMillis();
+//			
+//			next += 0.02f;
+//			Log.i("Turn", "next= "+next);
+//			float[] rot = { 0f, next, 0f };
+//			SensorManager.getRotationMatrixFromVector(mRotationMatrix,
+//					rot);
+//			
+//		}
+		
+		gl.glMultMatrixf(mRotationMatrix, 0);
+//		
+//		float[] orientation = new float[3];
+//		SensorManager.getOrientation(mRotationMatrix, orientation);
+//		
+//		float pi = (float) Math.PI;
+//		float rad2deg = 180/pi;
+//
+//		// Get the pitch, yaw and roll from the sensor. 
+//
+//		float yaw = orientation[0] * rad2deg;
+//		float pitch = orientation[1] * rad2deg;
+//		float roll = orientation[2] * rad2deg;
+//
+//		// Convert pitch, yaw and roll to a vector
+//
+//		float x = (float)(Math.cos( yaw ) * Math.cos( pitch ));
+//		float y = (float)(Math.sin( yaw ) * Math.cos( pitch ));
+//		float z = (float)(Math.sin( pitch ));
+//
+//		GLU.gluLookAt( gl, 0.0f, 0.0f, 0.0f, x, y, z, 0.0f, 1.0f, 0.0f ); 
 
 		// draw
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
@@ -100,8 +156,8 @@ public class GLSurfaceRenderer implements GLSurfaceView.Renderer,
 		private ByteBuffer mIndexBuffer;
 
 		public Square() {
-			final float vertices[] = { -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f,
-					0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f };
+			final float vertices[] = { -1.0f, 1.0f, -5f, -1.0f, -1.0f, -5f,
+					1.0f, -1.0f, -5f, 1.0f, 1.0f, -5f };
 
 			// red for each point
 			final float colors[] = { 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0,
@@ -128,8 +184,8 @@ public class GLSurfaceRenderer implements GLSurfaceView.Renderer,
 
 		public void draw(GL10 gl) {
 			gl.glEnable(GL10.GL_CULL_FACE); // only face-polygons are culled
-			gl.glFrontFace(GL10.GL_CCW); // front-face: counterclockwise
-			gl.glShadeModel(GL10.GL_FLAT); // since we only need one color, we
+			gl.glFrontFace(GL10.GL_CW); // front-face: counterclockwise
+			gl.glShadeModel(GL10.GL_SMOOTH); // since we only need one color, we
 											// use flat shading
 			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
 			gl.glColorPointer(4, GL10.GL_FLOAT, 0, mColorBuffer);
