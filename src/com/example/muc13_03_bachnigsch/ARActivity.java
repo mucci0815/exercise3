@@ -15,7 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.example.muc13_03_bachnigsch.AR.CameraPreview;
@@ -56,6 +56,8 @@ public class ARActivity extends Activity implements SensorEventListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		mSensorManager.unregisterListener(this);
 
@@ -79,6 +81,8 @@ public class ARActivity extends Activity implements SensorEventListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		mSensorManager.registerListener(this, mRotationVectorSensor,
 				SensorManager.SENSOR_DELAY_NORMAL);

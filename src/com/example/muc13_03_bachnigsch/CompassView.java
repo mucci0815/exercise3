@@ -26,7 +26,8 @@ public class CompassView extends View {
 		super(context);
 		zeichenfarbe.setAntiAlias(true);
 		zeichenfarbe.setColor(Color.WHITE);
-		zeichenfarbe.setStyle(Paint.Style.FILL);
+		zeichenfarbe.setStyle(Paint.Style.STROKE);
+		zeichenfarbe.setStrokeWidth(0);
 	}
 
 	public void setWinkel(float winkel) {
