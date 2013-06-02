@@ -116,7 +116,7 @@ public class SearchActivity extends Activity implements SensorEventListener {
 //		textView.setText("Received Azimut: " + Integer.toString(receivedAzimut) + "°");
 //		textView.setText("Personal Angle: " + Integer.toString(azimut) + "°");
 		
-		System.out.println("Ich wuerde hier: " + receivedAzimut);
+//		System.out.println("Ich wuerde hier: " + receivedAzimut);
 		
 		if (compassView != null) {
 //			System.out.println("Ich setze hier: " + azimut);
@@ -124,6 +124,14 @@ public class SearchActivity extends Activity implements SensorEventListener {
 		}		
 	}
 		
+	
+	/**
+	 * gets called when user presses button
+	 * 
+	 * receives azimut from server
+	 * 
+	 * @param view
+	 */
 	public void receiveOrientation(View view){
 
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

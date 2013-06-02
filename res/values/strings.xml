@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_discovery">DiscoveryActivity</string>
     <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_ar">ARActivity</string>
 
 </resources>

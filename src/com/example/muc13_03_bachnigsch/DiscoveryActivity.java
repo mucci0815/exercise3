@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,7 +13,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +31,8 @@ import android.widget.TextView;
  */
 
 public class DiscoveryActivity extends Activity implements SensorEventListener {
+	
+	private static final String TAG = DiscoveryActivity.class.getName();
 	
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
@@ -112,20 +117,29 @@ public class DiscoveryActivity extends Activity implements SensorEventListener {
 
 	}
 	
+	/**
+	 * gets called when user presses button
+	 * 
+	 * sends current azimut to server
+	 * @param view
+	 */
 	public void sendOrientation(View view){
 		
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 		
 		if (networkInfo != null && networkInfo.isConnected()) {	
-
-			String sendUri = "http://barracuda-vm8.informatik.uni-ulm.de/user/mucci0815/orientation/" + Integer.toString(azimut);
+			// get username from preferences
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+			String username = sharedPref.getString("pref_username", "");
+			
+			String sendUri = "http://barracuda-vm8.informatik.uni-ulm.de/user/"+username+"/orientation/" + Integer.toString(azimut);
 			NetworkHandler networkHandler = new NetworkHandler();
-			System.out.println("sendUri = " + sendUri);
+			Log.i(TAG, "sendUri = " + sendUri);
 			networkHandler.sendData(sendUri);
 			
 		} else {
-			System.out.print("No network connection available.");
+			Log.i(TAG,"No network connection available.");
 			//textView.setText("No network connection available.");		    	
 		}		
 	}
