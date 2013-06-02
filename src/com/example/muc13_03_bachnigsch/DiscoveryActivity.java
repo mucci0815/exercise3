@@ -3,7 +3,10 @@ package com.example.muc13_03_bachnigsch;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -26,19 +29,21 @@ import android.widget.TextView;
  * @author Max Nigsch
  * @author Martin Bach
  * 
- * Activity sendet Winkel an Server
- *
+ *         Activity sendet Winkel an Server
+ * 
  */
 
 public class DiscoveryActivity extends Activity implements SensorEventListener {
-	
+
 	private static final String TAG = DiscoveryActivity.class.getName();
-	
+
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
 	private TextView textView;
 	private int azimut;
-	
+	private float pitch_f;
+	private float roll_f;
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -48,9 +53,10 @@ public class DiscoveryActivity extends Activity implements SensorEventListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+		mSensorManager.registerListener(this, mSensor,
+				SensorManager.SENSOR_DELAY_NORMAL);
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	@Override
@@ -59,16 +65,15 @@ public class DiscoveryActivity extends Activity implements SensorEventListener {
 		setContentView(R.layout.activity_discovery);
 		// Show the Up button in the action bar.
 		setupActionBar();
-			
+
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-		
-		textView = (TextView)findViewById(R.id.textView1);
-		
-		if (mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION) != null){
+
+		textView = (TextView) findViewById(R.id.textView1);
+
+		if (mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION) != null) {
 			textView.setText("Orientierungssensor vorhanden");
-		}
-		else {
+		} else {
 			// Fehler - kein Kompass
 			textView.setText("Kein Orientierungssensor vorhanden");
 		}
@@ -104,43 +109,71 @@ public class DiscoveryActivity extends Activity implements SensorEventListener {
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		
-	    // Azimut
-	    float azimut_f = event.values[0];
-	    azimut = (int)(azimut_f + 0.5);
-	    textView.setText("Azimut: " + azimut + "°");
+
+		// Azimut
+		float azimut_f = event.values[0];
+		pitch_f = event.values[1];
+		roll_f = event.values[2];
+		azimut = (int) (azimut_f + 0.5);
+		textView.setText("Azimut: " + azimut + "°");
 
 	}
-	
+
 	/**
 	 * gets called when user presses button
 	 * 
 	 * sends current azimut to server
+	 * 
 	 * @param view
 	 */
-	public void sendOrientation(View view){
-		
-		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		
-		if (networkInfo != null && networkInfo.isConnected()) {	
-			// get username from preferences
-			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-			String username = sharedPref.getString("pref_username", "");
+	public void sendOrientation(View view) {
+
+		// check whether device is resting level
+		if (Math.abs(pitch_f) > 5.0 || Math.abs(roll_f) > 5.0) {
+			// alert user
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+			builder.setMessage("Please level your device").setTitle(
+					"Device is not level");
 			
-			String sendUri = "http://barracuda-vm8.informatik.uni-ulm.de/user/"+username+"/orientation/" + Integer.toString(azimut);
-			NetworkHandler networkHandler = new NetworkHandler();
-			Log.i(TAG, "sendUri = " + sendUri);
-			networkHandler.sendData(sendUri);
-			
+			builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					sendOrientation(null);					
+				}
+			});
+
+			AlertDialog dialog = builder.create();
+			dialog.show();
 		} else {
-			Log.i(TAG,"No network connection available.");
-			//textView.setText("No network connection available.");		    	
-		}		
+
+			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+			if (networkInfo != null && networkInfo.isConnected()) {
+				// get username from preferences
+				SharedPreferences sharedPref = PreferenceManager
+						.getDefaultSharedPreferences(this);
+				String username = sharedPref.getString("pref_username", "");
+
+				String sendUri = "http://barracuda-vm8.informatik.uni-ulm.de/user/"
+						+ username + "/orientation/" + Integer.toString(azimut);
+				NetworkHandler networkHandler = new NetworkHandler();
+				Log.i(TAG, "sendUri = " + sendUri);
+				networkHandler.sendData(sendUri);
+
+			} else {
+				Log.i(TAG, "No network connection available.");
+				// textView.setText("No network connection available.");
+			}
+		}
 	}
+	
+
 }
